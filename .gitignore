@@ -1,0 +1,16 @@
+# Virtual environment
+venv/
+.venv/
+
+# Postgres data
+_pgdata_b/
+
+# Python
+__pycache__/
+*.pyc
+
+# Odoo runtime
+*.log
+sessions/
+filestore/
+odoo.conf

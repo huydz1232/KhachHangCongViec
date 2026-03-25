@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  postgres-odoo-base:
+    container_name: postgres_odoo_b
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-odoo}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./_pgdata_b:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    restart: unless-stopped
+
+  odoo:
+    container_name: odoo_app
+    image: odoo:15
+    depends_on:
+      - postgres-odoo-base
+    ports:
+      - "8069:7000"
+    environment:
+      HOST: postgres-odoo-base
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:-odoo}
+      DB_NAME: odoo_minimal
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./_odoo_data:/var/lib/odoo
+      - ./odoo.conf.template:/etc/odoo/odoo.conf:ro
+      - ./entrypoint.sh:/entrypoint.sh
+    entrypoint: /entrypoint.sh
+    restart: unless-stopped
